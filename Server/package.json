@@ -1,0 +1,27 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "this is a server of CRM",
+  "main": "app.js",
+  "type": "module",
+  "scripts": {
+    "test": "npm run test"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/axs-seahorse7/BanksterIndiaCRM.git"
+  },
+  "author": "Sonu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/axs-seahorse7/BanksterIndiaCRM/issues"
+  },
+  "homepage": "https://github.com/axs-seahorse7/BanksterIndiaCRM#readme",
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "mongoose": "^8.13.0",
+    "nodemon": "^3.1.9"
+  }
+}
