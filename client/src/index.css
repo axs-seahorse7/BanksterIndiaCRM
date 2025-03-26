@@ -1,1 +1,13 @@
 @import "tailwindcss";
+
+.ant-layout-sider-children {
+    background: white;
+}
+
+.ant-layout-sider .ant-layout-sider-trigger {
+    background: white;
+}
+
+.ant-layout-sider-trigger .anticon {
+    display: none;
+}
