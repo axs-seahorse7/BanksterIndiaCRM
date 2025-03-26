@@ -16,7 +16,7 @@ const Positions = () => {
 
 
   return (
-<div className='w-full flex flex-col bg-white shadow-md py-4 rounded'>
+    <div className='w-full flex flex-col bg-white shadow-md py-4 rounded'>
       <div className='flex justify-between items-center w-full px-6'>
         <span className='text-emerald-500 font-semibold'>Manage Positions</span>
         <button className='px-3 py-1 cursor-pointer bg-cyan-500 font-semibold text-white rounded-4xl text-[12px] flex items-center gap-2'><i className="ri-add-circle-line text-[16px]"></i> Create New </button>
@@ -27,7 +27,7 @@ const Positions = () => {
           <div>Show</div>
           <select className='px-2 cursor-pointer border border-slate-300 rounded'>
             <option value={10}>10</option>
-          {[10, 50, 25, 50].map((value, i)=>(
+          {[25, 50].map((value, i)=>(
             <option key={i} value={value}>{value}</option>
           ))
 
