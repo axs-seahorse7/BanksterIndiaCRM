@@ -26,9 +26,9 @@ const Sidebar = ({ setPage, Page }) => {
 
     return (
         <Sider collapsible collapsed={collapsed} onCollapse={(value) => setCollapsed(value)} className="h-screen shadow">
-            <div className="flex items-center justify-between px-4 py-3 border-b">
-                <span className="text-lg font-semibold text-cyan-600">Smart Hirex</span>
-                <MenuFoldOutlined className="text-lg cursor-pointer" onClick={() => setCollapsed(!collapsed)} />
+            <div className="flex items-center justify-between px-4 py-3 border-b border-gray-200">
+                {!collapsed && (<span className="text-lg font-semibold text-cyan-600 ">Smart Hirex</span>)}
+                <MenuFoldOutlined className="text-lg cursor-pointer hover:bg-cyan-500 rounded hover:text-white px-4 py-2" onClick={() => setCollapsed(!collapsed)} />
             </div>
 
             <Menu

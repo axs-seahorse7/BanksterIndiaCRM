@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
 import { useNavigate } from 'react-router-dom';
 
-const Positions = () => {
+const Positions = ({openForm}) => {
   const navigate = useNavigate();
+  const [isStatusEdit, setisStatusEdit] = useState(false)
+  const handleToogleEditStatus = () =>{
+    setisStatusEdit(!isStatusEdit)
+  }
 
   const [Client, setClient] = useState([
     { id: 1, name: "John Doe", email: "john@example.com", phone: "123-456-7890" },
@@ -17,6 +21,8 @@ const Positions = () => {
     { id: 10, name: "Henry Ford", email: "henry@example.com", phone: "753-951-8520" }
   ]);
 
+
+
   const handleClick = () => {
     console.info("HELLO")
     navigate('/create-position');
@@ -26,7 +32,7 @@ const Positions = () => {
     <div className='w-full flex flex-col bg-white shadow-md py-4 rounded'>
       <div className='flex justify-between items-center w-full px-6'>
         <span className='text-emerald-500 font-semibold'>Manage Positions</span>
-        <button onClick={() => handleClick()} className='px-3 py-1 cursor-pointer bg-cyan-500 font-semibold text-white rounded-4xl text-[12px] flex items-center gap-2'><i className="ri-add-circle-line text-[16px]"></i> Create New </button>
+        <button onClick={() => openForm(true)} className='px-3 py-1 cursor-pointer bg-cyan-500 font-semibold text-white rounded-4xl text-[12px] flex items-center gap-2'><i className="ri-add-circle-line text-[16px]"></i> Create New </button>
       </div>
 
       <div className='flex justify-between items-center w-full mt-6 px-6'>
@@ -49,9 +55,9 @@ const Positions = () => {
         <div className='text-gray-500 flex px-4 gap-6 bg-slate-200 py-2 font-semibold rounded-t border border-slate-300'>
           <span className='text-slate-600 text-sm w-6'>SN</span>
           <span className='text-slate-600 text-sm w-36'>Title</span>
-          <span className='text-slate-600 text-sm w-36 '>Opening </span>
+          <span className='text-slate-600 text-sm w-26 '>Opening </span>
           <span className='text-slate-600 text-sm w-36 '>Client</span>
-          <span className='text-slate-600 text-sm w-36 '>city</span>
+          <span className='text-slate-600 text-sm w-26 '>city</span>
           <span className='text-slate-600 text-sm w-36 '>Closing Date</span>
           <span className='text-slate-600 text-sm w-26 '>Status</span>
           <span className='text-slate-600 text-sm w-8 '>Action</span>
@@ -61,17 +67,37 @@ const Positions = () => {
             <div key={i} className='text-gray-500 flex px-4 gap-6 bg-white py-2   border-b border-r border-l border-slate-300'>
               <span className='text-sm w-6'>{i + 1}</span>
               <span className='text-sm w-36'>Digital Marketing</span>
-              <span className='text-sm w-36 '>Succes</span>
+              <span className='text-sm w-26 '>Succes</span>
               <span className='text-sm w-36 '>Bankster India</span>
-              <span className='text-sm w-36 '>Jaipur</span>
-              <span className='text-sm w-36 '>12 July <i className="ri-pencil-line text-cyan-500 cursor-pointer"></i></span>
-              <span className='text-sm w-26 '>Rejected</span>
-              <div className='text-sm w-14 flex gap-2'>
+              <span className='text-sm w-26 '>Jaipur</span>
+              <span className='text-sm w-36 '>12 July</span>
+              <span className='w-26 flex gap-2'>
+                {!isStatusEdit && (
+                  <span>Active</span>
+                )}
+
+              {isStatusEdit && (
+                <select name="" id="">
+                  <option value="" hidden>Active</option>
+                  {["active", "rejected", 'hold', 'progress'].map((value, i)=>(
+                    <option value={value} key={i}>{value}</option>
+                  ))}
+                </select>
+              )}
+
+              {!isStatusEdit ? (<i onClick={()=>handleToogleEditStatus()} className="ri-pencil-line text-cyan-500 cursor-pointer"></i>): (
+                <i onClick={()=>handleToogleEditStatus()} className="ri-check-fill text-emerald-500 cursor-pointer"></i>
+              )
+              }          
+              </span>              <div className='text-sm w-8 flex gap-0.5'>
                 <button className='hover:bg-slate-200 rounded-full px-1 py-0.5 cursor-pointer'>
                   <i className="ri-settings-3-line text-cyan-500"></i>
                 </button>
                 <button className='hover:bg-slate-200 rounded-full px-1 py-0.5 cursor-pointer'>
                   <i className="ri-delete-bin-line text-red-500"></i>
+                </button>
+                <button className='hover:bg-slate-200 rounded-full px-1 py-0.5 cursor-pointer'>
+                <i className="ri-pencil-line text-cyan-500 cursor-pointer"></i>
                 </button>
               </div>
             </div>

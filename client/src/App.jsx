@@ -4,6 +4,7 @@ import AdminLogin from './Component/Auth/AdminLogin';
 import Dashboard from './Home/Dashboard';
 import CreatePosition from "./Component/Recruiter/CreatePosition";
 import RecruiterLogin from "./Component/Auth/RecruiterLogin";
+import ClientForm from './Home/Forms/CreateClient';
 
 const isAuthenticated = () => {
   return !!localStorage.getItem('token');
@@ -28,6 +29,7 @@ const App = () => {
         {/* Routes for user when logged in */}
         <Route path="/dashboard" element={<PrivateRoute><Dashboard /></PrivateRoute>} />
         <Route path="/create-position" element={<PrivateRoute><CreatePosition /></PrivateRoute>} />
+        <Route path="/create-client" element={<PrivateRoute><ClientForm/></PrivateRoute>} />
       </Routes>
     </BrowserRouter>
   );

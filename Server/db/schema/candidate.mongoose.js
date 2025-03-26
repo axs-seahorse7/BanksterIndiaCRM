@@ -13,7 +13,7 @@ const candidateSchema = new mongoose.Schema({
     education:[{
         collageName:String,
         degree:String,
-        statrDate:Date,
+        startDate:Date,
         endDate:Date,
     }],
     companyDetails:{
@@ -24,7 +24,7 @@ const candidateSchema = new mongoose.Schema({
         experience:Number,
         currentSalary:Number,
         expectedSalary:Number,
-        statrDate:Date,
+        startDate:Date,
         endDate:Date,
     },
     pastCompanyDetails:[{
@@ -62,4 +62,6 @@ const candidateSchema = new mongoose.Schema({
 
 })
 
-const candidate = mongoose.model('Candidate', candidateSchema )
+const candidateModel = mongoose.model('Candidate', candidateSchema )
+
+export default candidateModel

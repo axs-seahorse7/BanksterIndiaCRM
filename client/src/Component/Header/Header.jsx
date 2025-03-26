@@ -17,7 +17,7 @@ const Header = ({ Page }) => {
     );
 
     return (
-        <nav className='h-16 flex items-center justify-between px-6 bg-white shadow-md'>
+        <nav className='h-15 flex items-center justify-between px-6 bg-white shadow-md border-b border-gray-200'>
             <div className='text-cyan-600 capitalize font-semibold text-xl'>
                 {Page}
             </div>
