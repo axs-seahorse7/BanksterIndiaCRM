@@ -11,22 +11,22 @@ import PositionForm from './Forms/CreatePosition';
 
 const Dashboard = () => {
     const [Page, setPage] = useState('dashboard')
-    const [isCreateClient, setisCreateClient] = useState(false)
-    const [isCreateCandidate, setisCreateCandidate] = useState(false)
-    const [isCreatePosition, setisCreatePosition] = useState(false)
+    const [isCreateClient, setIsCreateClient] = useState(false)
+    const [isCreateCandidate, setIsCreateCandidate] = useState(false)
+    const [isCreatePosition, setIsCreatePosition] = useState(false)
 
-    const handleClientToogle = (value)=>{
-        if(value || !value){
-            setisCreateClient(value)
+    const handleClientToogle = (value) => {
+        if (value || !value) {
+            setIsCreateClient(value)
         }
     }
 
-    const handleCandidateToogle = (value) =>{
-        setisCreateCandidate(value)
+    const handleCandidateToogle = (value) => {
+        setIsCreateCandidate(value)
     }
-    
-    const handlePositionToogle = () =>{
-        setisCreatePosition(!isCreatePosition)
+
+    const handlePositionToogle = () => {
+        setIsCreatePosition(!isCreatePosition)
     }
 
     return (
@@ -59,29 +59,28 @@ const Dashboard = () => {
                         {Page === 'position' && (
                             <div className='flex gap-4  py-4 px-4 '>
                                 {
-                                isCreatePosition? (
-                                    <PositionForm closeForm={handlePositionToogle} />
-                                )
-                                :(<Positions openForm={handlePositionToogle} />)
+                                    isCreatePosition ? (
+                                        <PositionForm closeForm={handlePositionToogle} />
+                                    )
+                                        : (<Positions openForm={handlePositionToogle} />)
                                 }
                             </div>
                         )}
                         {Page === 'client' && (
                             <div className='flex gap-4  py-4 px-4 '>
                                 {
-                                isCreateClient? (<ClientForm closeForm={handleClientToogle} />)
-                                :(<Clients openForm={handleClientToogle} />)
+                                    isCreateClient ? (<ClientForm closeForm={handleClientToogle} />)
+                                        : (<Clients openForm={handleClientToogle} />)
                                 }
                             </div>
                         )}
                         {Page === 'candidate' && (
-                            <div className='flex gap-4  py-4 px-4'>
+                            <div className='py-4 px-4'>
                                 {
-                                    isCreateCandidate? (
+                                    isCreateCandidate ? (
                                         <CandidateForm closeForm={handleCandidateToogle} />
-                                    ):(
-                                        
-                                    <Candidates openForm={handleCandidateToogle} />
+                                    ) : (
+                                        <Candidates openForm={handleCandidateToogle} />
                                     )
                                 }
                             </div>
