@@ -1,8 +1,8 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const candidateSchema = new mongoose.Schema({
     name: { type: String, required: true },
-    mobileNo: { type: String, required: true, unique: true },
+    mobileNo: { type: Number, required: true, unique: true },
     email: { type: String, required: true, unique: true },
     location: {
         country: { type: String, required: true },
@@ -38,8 +38,33 @@ const candidateSchema = new mongoose.Schema({
             salary: { type: String, required: true },
         },
     ],
-    resume: { type: String, required: true },
-    password: { type: String, required: true },
+    status:{
+        hold:{
+            type:Boolean,
+            default:false
+        },
+        rejected:{
+            type:Boolean,
+            default:false
+        },
+        duplicate:{
+            type:Boolean,
+            default:false
+        },
+        active:{
+            type:Boolean,
+            default:false
+        },
+        close:{
+            type:Boolean,
+            default:false
+        },
+        
+    },
+    
+    resume: { type: String},
 }, { timestamps: true });
 
-module.exports = mongoose.model('Candidate', candidateSchema);
+const candidate = mongoose.model('Candidate', candidateSchema);
+
+export default candidate

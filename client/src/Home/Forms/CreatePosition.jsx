@@ -1,7 +1,11 @@
 import { useState } from "react";
+import axios from 'axios'
+import { useMessage } from "../../../Global/messageContext";
 
 const PositionForm = ({closeForm}) => {
-  const [formData, setFormData] = useState({
+  const message = useMessage()
+
+  const initialData = {
     jobTitle: "",
     totalVacancies: "",
     mobileNo: "",
@@ -26,7 +30,8 @@ const PositionForm = ({closeForm}) => {
       progress: false,
       waiting: false,
     },
-  });
+  }
+  const [formData, setFormData] = useState(initialData);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -65,10 +70,23 @@ const PositionForm = ({closeForm}) => {
     }));
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log("Form Data:", formData);
+  const handleSubmit = async (e) => {
+      e.preventDefault()
+
+    try {
+      const { data} = await axios.post('http://localhost:4000/api/create-position', formData, {
+        headers:{"Content-Type": "application/json"}
+      })
+      message.success(data?.message)
+      
+    } catch (error) {
+      message.warning(error?.data?.message)
+    }finally{
+      setFormData(initialData)
+    }
+    
   };
+
 
   return (
     <form onSubmit={handleSubmit} className="p-4 bg-white shadow rounded">

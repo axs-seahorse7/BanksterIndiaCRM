@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useState , useEffect} from 'react'
 import Clients from '../HomeComponent/Clients'
 import Candidates from '../HomeComponent/Candidates'
 import Positions from '../HomeComponent/Positions'
@@ -7,6 +7,7 @@ import Header from '../Component/Header/Header';
 import ClientForm from './Forms/CreateClient';
 import CandidateForm from './Forms/CreateCandidate';
 import PositionForm from './Forms/CreatePosition';
+import { useMessage } from '../../Global/messageContext';
 
 
 const Dashboard = () => {
@@ -14,6 +15,10 @@ const Dashboard = () => {
     const [isCreateClient, setisCreateClient] = useState(false)
     const [isCreateCandidate, setisCreateCandidate] = useState(false)
     const [isCreatePosition, setisCreatePosition] = useState(false)
+    const [CandidatesData, setCandidatesData] = useState([])
+    const [totalCandidates, settotalCandidates] = useState(null)
+    const message = useMessage()
+    const [filterCandidates, setfilterCandidates] = useState()
 
     const handleClientToogle = (value)=>{
         if(value || !value){
@@ -22,11 +27,15 @@ const Dashboard = () => {
     }
 
     const handleCandidateToogle = (value) =>{
-        setisCreateCandidate(value)
+    setisCreateCandidate(value)
     }
     
     const handlePositionToogle = () =>{
-        setisCreatePosition(!isCreatePosition)
+    setisCreatePosition(!isCreatePosition)
+    }
+
+    const takeFileterQuery = (query)=>{
+    setfilterCandidates(query)
     }
 
     return (
@@ -81,7 +90,7 @@ const Dashboard = () => {
                                         <CandidateForm closeForm={handleCandidateToogle} />
                                     ):(
                                         
-                                    <Candidates openForm={handleCandidateToogle} />
+                                    <Candidates openForm={handleCandidateToogle} filter={takeFileterQuery} />
                                     )
                                 }
                             </div>

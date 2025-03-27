@@ -1,9 +1,10 @@
 import { useState } from "react";
 import axios from 'axios'
+import { useMessage } from "../../../Global/messageContext";
 
 const ClientForm = ({closeForm}) => {
   const url = import.meta.env.VIT_API_URI
-
+  const message = useMessage()
   const initialData = {
     clientName: "",
     mobileNo: "",
@@ -67,10 +68,9 @@ const ClientForm = ({closeForm}) => {
     const response = await axios.post('http://localhost:4000/api/create-client', formData, {
     headers:{"Content-Type": "application/json"} 
     })
-
-    console.log(response.data.message)
+    message.success(response.data.message)
     } catch (error) {
-    console.log(error.message)
+    message.warning(error.response.data.message)
     }finally{
     setFormData(initialData)
     }
