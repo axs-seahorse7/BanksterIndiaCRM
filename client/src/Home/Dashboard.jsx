@@ -1,4 +1,4 @@
-import React, { useState , useEffect} from 'react'
+import React, { useState, useEffect } from 'react'
 import Clients from '../HomeComponent/Clients'
 import Candidates from '../HomeComponent/Candidates'
 import Positions from '../HomeComponent/Positions'
@@ -7,14 +7,14 @@ import Header from '../Component/Header/Header';
 import ClientForm from './Forms/CreateClient';
 import CandidateForm from './Forms/CreateCandidate';
 import PositionForm from './Forms/CreatePosition';
-import { useMessage } from '../../Global/messageContext';
 
 
 const Dashboard = () => {
     const [Page, setPage] = useState('dashboard')
     const [isCreateClient, setisCreateClient] = useState(false)
     const [isCreateCandidate, setisCreateCandidate] = useState(false)
-    const [isCreatePosition, setisCreatePosition] = useState(false)
+    const [isCreatePosition, setisCreatePosition] = useState(false);
+    const [editFormData, setEditFormData] = useState(false);
 
     const handleClientToogle = (value) => {
         if (value || !value) {
@@ -22,16 +22,22 @@ const Dashboard = () => {
         }
     }
 
-    const handleCandidateToogle = (value) =>{
-        setisCreateCandidate(value)
+    const handleCandidateToogle = (value) => {
+        setisCreateCandidate(value);
+        setEditFormData(null);
     }
-    
-    const handlePositionToogle = () =>{
+
+    const handleEditForm = (value, data) => {
+        setisCreateCandidate(value);
+        setEditFormData(data);
+    }
+
+    const handlePositionToogle = () => {
         setisCreatePosition(!isCreatePosition)
     }
 
-    const takeFileterQuery = (query)=>{
-    setfilterCandidates(query)
+    const takeFileterQuery = (query) => {
+        setfilterCandidates(query);
     }
 
     return (
@@ -83,10 +89,9 @@ const Dashboard = () => {
                             <div className='py-4 px-4'>
                                 {
                                     isCreateCandidate ? (
-                                        <CandidateForm closeForm={handleCandidateToogle} />
-                                    ):(
-                                        
-                                    <Candidates openForm={handleCandidateToogle} />
+                                        <CandidateForm closeForm={handleCandidateToogle} editFormData={editFormData} />
+                                    ) : (
+                                        <Candidates openForm={handleCandidateToogle} EditForm={handleEditForm} />
                                     )
                                 }
                             </div>

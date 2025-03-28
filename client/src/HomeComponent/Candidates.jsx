@@ -1,250 +1,286 @@
-import React, {useState, useEffect} from 'react'
-import { useNavigate } from 'react-router-dom'
-import { Popover, Button, Checkbox, Drawer , Card, Avatar } from "antd";
-import { UserOutlined } from "@ant-design/icons";
-import {BarLoader} from 'react-spinners'
-import { useMessage } from '../../Global/messageContext';
+import React, { useState, useEffect } from 'react';
+import { Table, Drawer, Select, Input, message, Pagination, Card, Avatar, Button, Divider } from "antd";
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import axios from 'axios';
+import { UserOutlined } from "@ant-design/icons";
+import { FilePdfOutlined, PhoneOutlined, MailOutlined, GlobalOutlined } from "@ant-design/icons";
 
+const { Option } = Select;
 
-const Candidates = ({openForm, filter}) => {
-    const [isStatusEdit, setisStatusEdit] = useState(false)
-    const message = useMessage()
-    const navigate = useNavigate()
-    const [open, setOpen] = useState(false);
-    const [candidateLendth, setcandidateLendth] = useState()
-    const [limit, setlimit] = useState(20)
-    const [page, setpage] = useState(1)
-    const [Candidates, setCandidates] = useState();
-    const [candidateDetails, setCandidateDetails] = useState(null);
-    const [openProfile, setopenProfile] = useState(false)
-    const [profileNavigate, setprofileNavigate] = useState()
-    const [Loading, setLoading] = useState(false)
+const Candidates = ({ openForm, EditForm }) => {
+  const [candidates, setCandidates] = useState([]);
+  const [candidateLength, setCandidateLength] = useState(0);
+  const [limit, setLimit] = useState(10);
+  const [page, setPage] = useState(1);
+  const [loading, setLoading] = useState(false);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [debouncedQuery, setDebouncedQuery] = useState("");
+  const [statusFilter, setStatusFilter] = useState(null);
+  const [messageApi, contextHolder] = message.useMessage();
+  const [candidateDetails, setCandidateDetails] = useState(null);
+  const [openProfile, setOpenProfile] = useState(false);
 
+  // ✅ Fetch Candidates
+  const fetchCandidates = async () => {
+    try {
+      setLoading(true);
+      const skip = limit * (page - 1);
+      const { data } = await axios.get('http://localhost:4000/fetch-candidate', {
+        params: { query: debouncedQuery, status: statusFilter, limit, skip }
+      });
 
-
-    const [filters, setFilters] = useState({
-      active: false,
-      rejected: false,
-      hold: false,
-      progress:false,
-      joined:false
-    });
-  
-    const toggleDrawer = () => setOpen(!open);
-  
-    const handleChange = (e) => {
-      setFilters({ ...filters, [e.target.name]: e.target.checked });
-    };
-
-
-    const handleToogleEditStatus = () =>{
-      setisStatusEdit(!isStatusEdit)
+      setCandidates(data?.candidates || []);
+      setCandidateLength(data.totalCandidates);
+    } catch (error) {
+      console.error(error.message);
+    } finally {
+      setLoading(false);
     }
+  };
 
-     //fetch ccandidates by filter and caniddate length
-     const fetchCandidate = async () =>{
-       try {
-        setLoading(true)
-        const skip =  (limit * page) - limit
-        const {data} = await axios.get('http://localhost:4000/fetch-candidate', {
-        params:{
-        query:filters,
-        limit,
-        skip,
-        }
-        })
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setDebouncedQuery(searchQuery);
+    }, 1500);
 
-        setCandidates(data?.candidates)
-        setcandidateLendth(data.totalCandidates)
-         
-       } catch (error) {
-        console.log(error.message)
-       }finally{
-      setLoading(false)
-       }
+    return () => clearTimeout(handler);
+  }, [searchQuery]);
 
-     }
+  useEffect(() => {
+    fetchCandidates();
+  }, [page, limit, statusFilter, debouncedQuery]);
 
-     
-    useEffect(() => {
-    fetchCandidate()
-    }, [])
+  // ✅ Handle Edit
+  const handleEdit = (data) => {
+    EditForm(true, data);
+  };
 
-
-    const next = ()=>{
-    if(Candidates >= candidateLendth) return
-    setpage(page+1)
+  // ✅ Handle Delete
+  const handleDelete = async (data) => {
+    try {
+      setLoading(true);
+      await axios.delete(`http://localhost:4000/candidates/${data._id}`);
+      messageApi.success("Candidate deleted successfully!");
+      fetchCandidates();
+    } catch (error) {
+      messageApi.error(error.message || "Error deleting candidate");
+    } finally {
+      setLoading(false);
     }
-    const prev = ()=>{
-    if(candidateLendth === 0) return
-    setpage(page-1)
-    }
+  };
 
-    useEffect(() => {
-    fetchCandidate()
-    }, [page])
-    
+  const handleView = (data) => {
+    setOpenProfile(true);
+    setCandidateDetails(data);
+  }
 
+  // ✅ Table Columns
+  const columns = [
+    { title: "SN", dataIndex: "index", key: "index", render: (_, __, i) => (page - 1) * limit + i + 1 },
+    { title: "Candidate Name", dataIndex: "name", key: "name" },
+    { title: "Email", dataIndex: "email", key: "email" },
+    { title: "Contact", dataIndex: "mobileNo", key: "mobileNo" },
+    { title: "Designation", dataIndex: ["companyDetails", "designation"], key: "designation" },
+    { title: "Company", dataIndex: ["companyDetails", "companyName"], key: "company" },
+    { title: "Location", dataIndex: ["location", "city"], key: "location" },
+    { title: "Status", dataIndex: "status", key: "status" },
+    {
+      title: 'Action',
+      key: 'action',
+      render: (_, record) => (
+        <div className="d-flex gap-3">
+          <EditOutlined
+            className="text-success fs-5 cursor-pointer"
+            onClick={() => handleView(record)}
+          />
 
-      const content = (
-        <div style={{ width: 250, padding: "10px" }}>
-          <Checkbox name="active" checked={filters.active} onChange={handleChange}>
-            Active
-          </Checkbox>
-          <br />
-          <Checkbox name="rejected" checked={filters.rejected} onChange={handleChange}>
-            Rejected
-          </Checkbox>
-          <br />
-          <Checkbox name="hold" checked={filters.hold} onChange={handleChange}>
-            Hold
-          </Checkbox>
-          <br/>
-          <Checkbox name="joined" checked={filters.joined} onChange={handleChange}>
-            Joined
-          </Checkbox>
-          <br />
-          
-          <Button type="primary" block onClick={() => filter(filters)}>
-            Save
-          </Button>
-          
+          <EditOutlined
+            className="text-success fs-5 cursor-pointer"
+            onClick={() => handleEdit(record)}
+          />
+
+          <DeleteOutlined
+            className="text-danger fs-5 cursor-pointer"
+            onClick={() => handleDelete(record)}
+          />
         </div>
+      )
+    }
 
-      );
-      
-
-
-
+  ];
 
   return (
-  <div className='w-full flex flex-col bg-white shadow-md py-4 rounded'>
-      <div className='flex justify-between items-center w-full px-6'>
-        <span className='text-emerald-500 font-semibold'>Manage Candidates</span>
-        <button onClick={()=>openForm(true)} className='px-3 py-1 cursor-pointer bg-cyan-500 font-semibold text-white rounded-4xl text-[12px] flex items-center gap-2'><i className="ri-add-circle-line text-[16px]"></i> Create New </button>
-      </div>
+    <>
+      <div className='w-full flex flex-col bg-white shadow-md py-4 rounded'>
+        {contextHolder}
 
-      <div className='flex justify-between items-center w-full mt-6 px-6'>
-        <div className='text-slate-500 flex gap-2'>
-        <div>Show</div>
-        <select  className='px-2 cursor-pointer border border-slate-300 rounded'>
-        <option value={10}>10</option>
-        {[10, 25, 50].map((value, i)=>(
-        <option key={i} value={value}>{value}</option>
-        ))}
-        </select>
+        {/* ✅ Header */}
+        <div className='flex justify-between items-center w-full px-6'>
+          <span className='text-emerald-500 font-semibold'>Manage Candidates</span>
+          <button onClick={() => openForm(true)} className='px-3 py-1 bg-cyan-500 text-white rounded-4xl flex items-center gap-2'>
+            <i className="ri-add-circle-line"></i> Create New
+          </button>
         </div>
 
-        <div className=' py-1 px-4 cursor-pointer font-semibold rounded-4xl text-[12px] flex items-center gap-3'>
-          <input type="text" placeholder='Search Candidate' className='border border-slate-300 w-[400px]  py-1 px-2 rounded  focus:outline-none' />
-          <div >
-          <Popover content={content} title="Filter Options" trigger="click" placement="rightTop">
-          <button  ><i className="ri-equalizer-2-line text-2xl text-cyan-500 cursor-pointer"></i> </button>
-          </Popover>
-          </div>
-          </div>
-      </div>
-
-      <div className='mt-8 rounded px-4 '>
-          <div className='text-gray-500 flex justify-around pr-10 pl-4 gap-6 bg-slate-200 py-2 font-semibold rounded-t border border-slate-300'>
-            <span className='text-slate-600 bord  text-sm w-6'>SN</span>
-            <span className='text-slate-600 bord  text-sm w-36'>Candidate Name</span>
-            <span className='text-slate-600 bord  text-sm w-36'>Email</span>
-            <span className='text-slate-600 bord  text-sm w-36'>Contact</span>
-            <span className='text-slate-600 bord  text-sm w-36'>Designation</span> 
-            <span className='text-slate-600 bord  text-sm w-26'>Company</span>
-            <span className='text-slate-600 bord  text-sm w-26'>Location</span>
-            <span className='text-slate-600 bord  text-sm w-16'>Status</span>
-          </div>
-          {Array.isArray(Candidates) && Candidates.length>0 && Candidates.map((user, i)=>(
-          <div onClick={()=>{
-          setopenProfile(true)
-          setCandidateDetails(user)}
-          } 
-          key={i} 
-          className='text-gray-500 hover:bg-gray-100 justify-around flex pr-10 pl-4 gap-6 cursor-pointer bg-white py-2   border-b border-r border-l border-slate-300'
-          >
-            <span className='text-sm h-6 w-6'>{i+1}</span>
-            <span className='text-sm w-36'> {user.name} </span>
-            <span className='text-sm w-36 '>{user.email}</span>
-            <span className='text-sm w-36 '>{user.mobileNo}</span>
-            <span className='text-sm w-36 '>{user.companyDetails.designation}</span>
-            <span className='text-sm w-26 '>{user.companyDetails.companyName}</span>
-            <span className='text-sm w-26 '>{user.location.city}</span>
-            <span className='w-16 flex gap-2  items-center'>Active </span>            
-            
+        {/* ✅ Filters and Search */}
+        <div className='flex justify-between items-center w-full mt-6 px-6'>
+          <div className='text-slate-500 flex gap-2'>
+            <div>Show</div>
+            <select className='border border-slate-300 rounded' value={limit} onChange={(e) => setLimit(Number(e.target.value))}>
+              {[10, 25, 50].map(value => <option key={value} value={value}>{value}</option>)}
+            </select>
           </div>
 
-          ))}
+          <div className='flex items-center gap-3'>
+            {/* ✅ Search Input */}
+            <Input
+              type="text"
+              placeholder="Search Candidate"
+              className="border border-slate-300 w-[400px] py-1 px-2 rounded focus:outline-none"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
 
-          {Loading && (
-          <div className='w-full h-10 items-center flex justify-center'>
-          <BarLoader  />
-          </div>
-          )}
-          <div>
-            <Drawer
-              title="Candidate Profile"
-              placement="right"
-              width={400}
-              onClose={() => setopenProfile(false)}
-              open={openProfile}
+            {/* ✅ Status Filter Dropdown */}
+            <Select
+              mode="multiple"
+              placeholder="Filter by Status"
+              className="w-100"
+              value={statusFilter}
+              onChange={setStatusFilter}
+              allowClear
+              maxTagCount="responsive"
             >
-              {candidateDetails ? (
-                <div>
-                  <Card style={{ textAlign: ""  }}>
-                    <div className='flex items-center gap-4'>
-                    <Avatar size={60} icon={<UserOutlined />} />
-                    <div className='flex flex-col gap-0'>
-                    <h2 className='text-slate-600 font-semibold text-xl'>{candidateDetails.name}</h2>
-                    <p style={{ color: "gray" }}>{candidateDetails.companyDetails.designation}</p>
-                    </div>
-                    </div>
-                  </Card>
-                    <div className='py-4 flex gap-2 flex-col'>
-                      <div className='flex shadow border border-slate-200 rounded justify-between overflow-hidden'>
-                      <span className='py-1 w-26 px-4 bg-zinc-600 text-white '>Contact</span>
-                      <span className='px-4 text-gray-600 font-semibold flex items-center'>{candidateDetails.mobileNo}</span>
-                      </div>
+              <Option value="active">Active</Option>
+              <Option value="rejected">Rejected</Option>
+              <Option value="hold">Hold</Option>
+              <Option value="joined">Joined</Option>
+            </Select>
 
-                      <div className='flex shadow border border-slate-200 rounded justify-between overflow-hidden'>
-                      <span className='py-1 w-26 px-4 bg-zinc-600 text-white '>Email</span>
-                      <span className='px-4 text-gray-600 font-semibold flex items-center'>{candidateDetails.email}</span>
-                      </div>
+          </div>
+        </div>
 
-                      <div className='flex shadow border border-slate-200 rounded justify-between overflow-hidden'>
-                      <span className='py-1 w-26 px-4 bg-zinc-600 text-white '>Company</span>
-                      <span className='px-4 text-gray-600 font-semibold flex items-center'>{candidateDetails.companyDetails.companyName}</span>
-                      </div>
+        {/* ✅ Table */}
+        <div className='mt-6 px-4'>
+          <Table
+            columns={columns}
+            dataSource={candidates.map((c, i) => ({ ...c, key: i }))}
+            loading={loading}
+            pagination={false}
+          />
 
-                      <div className='flex shadow border border-slate-200 rounded justify-between overflow-hidden'>
-                      <span className='py-1 w-26 px-4 bg-zinc-600 text-white '>Status</span>
-                      <span className='px-4 text-gray-600 font-semibold flex items-center'>Active</span>
-                      </div>
+          {/* ✅ Pagination */}
+          <div className='flex justify-between mt-4 px-6'>
+            <span className='text-sm text-gray-500 font-mono'>
+              Showing {candidates.length} out of {candidateLength} entries
+            </span>
+            <Pagination
+              current={page}
+              pageSize={limit}
+              total={candidateLength}
+              onChange={setPage}
+              showSizeChanger={false}
+            />
+          </div>
+        </div>
+        {/* Candidate Drawer */}
+        <Drawer
+          title="Candidate Profile"
+          placement="right"
+          width={500}
+          onClose={() => setOpenProfile(false)}
+          open={openProfile}
+        >
+          {console.info("candidateDetails", candidateDetails)}
+          {candidateDetails ? (
+            <div className="flex flex-col gap-4">
 
-                    </div>
-
+              <Card>
+                <div className="flex items-center gap-4">
+                  <Avatar size={80} icon={<UserOutlined />} />
+                  <div className="flex flex-col">
+                    <h2 className="text-lg font-semibold text-gray-700 break-words">{candidateDetails.name}</h2>
+                    <span className="text-gray-500 break-words">{candidateDetails.companyDetails.designation}</span>
                   </div>
-                  ) : (
-                  <p>Loading candidate details...</p>
-                  )}
-                  </Drawer>
                 </div>
-          
-                <div className='flex justify-between mt-4'>
-                  <span className='text-[12px] text-gray-500 font-mono'>Showing {Math.ceil(candidateLendth /limit)} out of {candidateLendth} enteries</span>
-                  <div className='text-cyan-600 flex gap-2 text-[14px]'>
-                  <button className='px-4 rounded-3xl hover:bg-cyan-500 active:bg-cyan-600 hover:text-white cursor-pointer py-1'>Previous</button>
-                  <button className='px-4 rounded-3xl hover:bg-cyan-500 active:bg-cyan-600 hover:text-white cursor-pointer py-1'>Next</button>
+              </Card>
+
+
+              <Card>
+                <h3 className="font-semibold text-gray-700">Basic Information</h3>
+                <Divider />
+                <div className="grid grid-cols-2 gap-3">
+                  {[
+                    { label: "Contact", value: candidateDetails.mobileNo, icon: <PhoneOutlined /> },
+                    { label: "Email", value: candidateDetails.email, icon: <MailOutlined /> },
+                    { label: "Company", value: candidateDetails.companyDetails.companyName },
+                    { label: "Experience", value: `${candidateDetails.companyDetails.experience} years` },
+                    { label: "Current Salary", value: `${candidateDetails.companyDetails.currentSalary} LPA` },
+                    { label: "Expected Salary", value: `${candidateDetails.companyDetails.expectedSalary} LPA` },
+                    { label: "Website", value: candidateDetails.companyDetails.websiteLink, icon: <GlobalOutlined /> },
+                  ].map(({ label, value, icon }) => (
+                    <div
+                      key={label}
+                      className="flex items-center gap-2 p-2 border border-gray-300 rounded w-full overflow-hidden break-words"
+                    >
+                      {icon && <span className="text-gray-600">{icon}</span>}
+                      <span className="text-gray-600">{label}:</span>
+                      <span className="font-semibold truncate max-w-full">{value}</span>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
+              <Card>
+                <h3 className="font-semibold text-gray-700">Location</h3>
+                <Divider />
+                <p className="break-words"><strong>City:</strong> {candidateDetails.location.city}, {candidateDetails.location.state}</p>
+                <p className="break-words"><strong>Country:</strong> {candidateDetails.location.country}</p>
+                <p className="break-words"><strong>ZIP Code:</strong> {candidateDetails.location.zip}</p>
+              </Card>
+
+              {candidateDetails.education.length > 0 && (
+                <Card>
+                  <h3 className="font-semibold text-gray-700">Education</h3>
+                  <Divider />
+                  {candidateDetails.education.map((edu) => (
+                    <div key={edu._id} className="p-2 border border-gray-300 rounded mb-2 overflow-hidden break-words">
+                      <p><strong>College:</strong> {edu.collegeName}</p>
+                      <p><strong>Degree:</strong> {edu.degree}</p>
+                      <p><strong>Duration:</strong> {new Date(edu.startDate).toLocaleDateString()} - {new Date(edu.endDate).toLocaleDateString()}</p>
+                    </div>
+                  ))}
+                </Card>
+              )}
+
+              {candidateDetails.resume && (
+                <Card>
+                  <h3 className="font-semibold text-gray-700">Resume</h3>
+                  <Divider />
+                  <div className="flex items-center gap-3 w-full overflow-hidden">
+                    <FilePdfOutlined className="text-red-500 text-2xl" />
+                    <a
+                      href={`http://localhost:4000${candidateDetails.resume}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-blue-600 underline truncate max-w-full"
+                    >
+                      View Resume
+                    </a>
+                    <Button type="primary" size="small" onClick={() => window.open(candidateDetails.resume, "_blank")}>
+                      Download
+                    </Button>
                   </div>
-                </div>
+                </Card>
+              )}
+            </div>
+          ) : (
+            <p>Loading candidate details...</p>
+          )}
+        </Drawer>
       </div>
-      
-    </div>  
-    
-  
-  )
-}
+    </>
+  );
+};
 
-export default Candidates 
+export default Candidates;
