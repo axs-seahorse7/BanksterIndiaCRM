@@ -15,23 +15,19 @@ const Dashboard = () => {
     const [isCreateClient, setisCreateClient] = useState(false)
     const [isCreateCandidate, setisCreateCandidate] = useState(false)
     const [isCreatePosition, setisCreatePosition] = useState(false)
-    const [CandidatesData, setCandidatesData] = useState([])
-    const [totalCandidates, settotalCandidates] = useState(null)
-    const message = useMessage()
-    const [filterCandidates, setfilterCandidates] = useState()
 
-    const handleClientToogle = (value)=>{
-        if(value || !value){
-            setisCreateClient(value)
+    const handleClientToogle = (value) => {
+        if (value || !value) {
+            setIsCreateClient(value)
         }
     }
 
     const handleCandidateToogle = (value) =>{
-    setisCreateCandidate(value)
+        setisCreateCandidate(value)
     }
     
     const handlePositionToogle = () =>{
-    setisCreatePosition(!isCreatePosition)
+        setisCreatePosition(!isCreatePosition)
     }
 
     const takeFileterQuery = (query)=>{
@@ -68,29 +64,29 @@ const Dashboard = () => {
                         {Page === 'position' && (
                             <div className='flex gap-4  py-4 px-4 '>
                                 {
-                                isCreatePosition? (
-                                    <PositionForm closeForm={handlePositionToogle} />
-                                )
-                                :(<Positions openForm={handlePositionToogle} />)
+                                    isCreatePosition ? (
+                                        <PositionForm closeForm={handlePositionToogle} />
+                                    )
+                                        : (<Positions openForm={handlePositionToogle} />)
                                 }
                             </div>
                         )}
                         {Page === 'client' && (
                             <div className='flex gap-4  py-4 px-4 '>
                                 {
-                                isCreateClient? (<ClientForm closeForm={handleClientToogle} />)
-                                :(<Clients openForm={handleClientToogle} />)
+                                    isCreateClient ? (<ClientForm closeForm={handleClientToogle} />)
+                                        : (<Clients openForm={handleClientToogle} />)
                                 }
                             </div>
                         )}
                         {Page === 'candidate' && (
-                            <div className='flex gap-4  py-4 px-4'>
+                            <div className='py-4 px-4'>
                                 {
-                                    isCreateCandidate? (
+                                    isCreateCandidate ? (
                                         <CandidateForm closeForm={handleCandidateToogle} />
                                     ):(
                                         
-                                    <Candidates openForm={handleCandidateToogle} filter={takeFileterQuery} />
+                                    <Candidates openForm={handleCandidateToogle} />
                                     )
                                 }
                             </div>
