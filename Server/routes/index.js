@@ -42,6 +42,7 @@ router.post('/create-position', async (req, res)=>{
     try {
        const { 
         jobTitle,
+        client,
         totalVacancies,
         mobileNo,
         location,
@@ -61,8 +62,9 @@ router.post('/create-position', async (req, res)=>{
     
 
 
-        const client = new jobsModel({
+        const newClient = new jobsModel({
             jobTitle,
+            client,
             totalVacancies,
             mobileNo: Number(mobileNo),
             location,
@@ -77,7 +79,7 @@ router.post('/create-position', async (req, res)=>{
             requireDiscription,
         })
 
-        await client.save()
+        await newClient.save()
         return res.json({success: true, message:"client created"})
     } catch (error) {
         console.log(error)

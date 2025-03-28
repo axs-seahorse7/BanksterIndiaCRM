@@ -1,12 +1,14 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import axios from 'axios'
 import { useMessage } from "../../../Global/messageContext";
 
 const PositionForm = ({closeForm}) => {
   const message = useMessage()
+  const [Clients, setClients] = useState([])
 
   const initialData = {
     jobTitle: "",
+    client:'',
     totalVacancies: "",
     mobileNo: "",
     location: {
@@ -87,6 +89,23 @@ const PositionForm = ({closeForm}) => {
     
   };
 
+  const fetchClients = async () =>{
+   try {
+    const {data} = await axios.get("http://localhost:4000/fetch-client")
+    setClients(data.client)
+    console.log('clients in form ', data.client)
+    
+   } catch (error) {
+    console.log(error.message)
+   }
+
+  }
+
+    useEffect(()=>{
+      fetchClients()
+      console.log('client fetching start...')
+    },[])
+
 
   return (
     <form onSubmit={handleSubmit} className="p-4 bg-white shadow rounded">
@@ -98,9 +117,22 @@ const PositionForm = ({closeForm}) => {
 
       <div className="flex gap-6 flex-wrap">
       <div className="flex flex-col gap-2">
-            <label htmlFor="" className="text-sm text-gray-600"> Job title </label>
-            <input name="jobTitle" value={formData.jobTitle} onChange={handleChange} placeholder="Job Title" className="input-field py-1 border border-slate-300 focus:outline-none px-2 rounded bg-white w-[300px]" />
-            </div>
+        <label htmlFor="" className="text-sm text-gray-600"> Job title </label>
+        <input name="jobTitle" value={formData.jobTitle} onChange={handleChange} placeholder="Job Title" className="input-field py-1 border border-slate-300 focus:outline-none px-2 rounded bg-white w-[300px]" />
+        </div>
+      <div className="flex flex-col gap-2">
+        <label htmlFor="" className="text-sm text-gray-600"> Job title </label>
+        <select onChange={handleChange} value={formData.client} name="client" className="input-field  border py-1 border-slate-300 focus:outline-none px-2 rounded bg-white w-[300px]">
+          <option value="" className="text-gray-400">Select Company</option>
+          {
+            Array.isArray(Clients) && Clients.map(user=>(
+              <option key={user._id} value={user._id}>{user.clientName}</option>
+            ))
+          }
+        </select>
+        </div>
+
+
       <div className="flex flex-col gap-2">
             <label htmlFor="" className="text-sm text-gray-600"> Total Vacancy </label>
             <input type="number" name="totalVacancies" value={formData.totalVacancies} onChange={handleChange} placeholder="Total Vacancies" className="input-field py-1 border border-slate-300 focus:outline-none px-2 rounded bg-white w-[300px]" />

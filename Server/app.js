@@ -6,6 +6,8 @@ import authRoutes from "./routes/authRoutes.js";
 import index from './routes/index.js'
 import bodyParser from "body-parser";
 import Candidate from './models/Candidates.js';
+import clientModel from "./db/schema/client.mongoose.js";
+import jobsModel from "./db/schema/job.mongoose.js";
 
 dotenv.config();
 connectDB();
@@ -132,6 +134,34 @@ router.get("/fetch-candidate", async (req, res) => {
         res.status(500).json({ message: "Something went wrong" });
     }
 });
+
+router.get('/fetch-client', async (req, res)=>{
+    try {
+
+        const client = await clientModel.find()
+        const totalclientDocs = await clientModel.countDocuments()
+
+        res.json({client, totalClients: totalclientDocs})
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+
+})
+
+router.get('/fetch-position', async (req, res)=>{
+    try {
+        const positions = await jobsModel.find()
+        const totalPositionsDocs = await jobsModel.countDocuments()
+
+        res.json({positions, totalPositions: totalPositionsDocs})
+        
+    } catch (error) {
+        console.log(error.message)
+    }
+
+})
+
 
 app.get('/data', (req, res) => {
     res.send(' router here')

@@ -14,6 +14,10 @@ const jobSchema = new mongoose.Schema({
         type:mongoose.Schema.Types.ObjectId,
         ref:'Client'
     },
+    candidateCvs:{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Candidate'
+    },
     publishDate:Date,
     validDate:Date,
     industry:String,
@@ -24,20 +28,10 @@ const jobSchema = new mongoose.Schema({
     description:String,
     requireDiscription:String,
     files:String,
-    jobOpenStatus:{
-        hold:{
-            type:Boolean,
-            default:false,
-        },
-        progress:{
-            type:Boolean,
-            default:false,
-        },
-        waiting:{
-            type:Boolean,
-            default:false
-        },
-    },
+    open:{ 
+        type:Boolean,
+        default:false
+    }
 
 })
 

@@ -34,6 +34,10 @@ const candidateSchema = new mongoose.Schema({
         experience:Number,
         salary:Number,
     }],
+    client:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Client'
+    }],
     status:{
         hold:{
             type:Boolean,

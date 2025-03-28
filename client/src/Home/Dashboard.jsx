@@ -18,7 +18,7 @@ const Dashboard = () => {
 
     const handleClientToogle = (value) => {
         if (value || !value) {
-            setIsCreateClient(value)
+            setisCreateClient(value)
         }
     }
 

@@ -21,6 +21,16 @@ const clientSchema = new mongoose.Schema({
         zip:Number,
         street:String,
     },
+    jobs:[{
+        type:mongoose.Schema.Types.ObjectId,
+        ref:'Jobs'
+    }],
+    status:{
+        active:{
+            type:Boolean,
+            default:false
+        }
+    },
     files:[{
         document:String,
     }],
